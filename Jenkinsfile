@@ -1,12 +1,15 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     tools {
         maven 'MAVEN'
     }
 
     environment {
-        DOCKERHUB_PWD = credentials('CredentialID_DockerHubPWD')
         IMAGE_NAME = 'oladegs/comp367-webapp:1.0'
     }
 
@@ -25,7 +28,13 @@ pipeline {
 
         stage('Docker login') {
             steps {
-                bat '@echo %DOCKERHUB_PWD% | docker login -u oladegs --password-stdin'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
+                }
             }
         }
 
