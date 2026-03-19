@@ -7,9 +7,7 @@ pipeline {
 
     environment {
         DOCKERHUB_PWD = credentials('CredentialID_DockerHubPWD')
-        DOCKERHUB_USER = 'oladegs'
-        IMAGE_NAME = 'comp367-webapp'
-        IMAGE_TAG = '1.0'
+        IMAGE_NAME = 'oladegs/comp367-webapp:1.0'
     }
 
     stages {
@@ -27,19 +25,19 @@ pipeline {
 
         stage('Docker login') {
             steps {
-                bat 'docker login -u %DOCKERHUB_USER% -p %DOCKERHUB_PWD%'
+                bat '@echo %DOCKERHUB_PWD% | docker login -u oladegs --password-stdin'
             }
         }
 
         stage('Docker build') {
             steps {
-                bat 'docker build -t %DOCKERHUB_USER%/%IMAGE_NAME%:%IMAGE_TAG% .'
+                bat 'docker build -t %IMAGE_NAME% .'
             }
         }
 
         stage('Docker push') {
             steps {
-                bat 'docker push %DOCKERHUB_USER%/%IMAGE_NAME%:%IMAGE_TAG%'
+                bat 'docker push %IMAGE_NAME%'
             }
         }
     }
